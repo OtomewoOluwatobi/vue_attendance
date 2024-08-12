@@ -27,10 +27,11 @@ function openNew() {
     permissionDialog.value = true;
 }
 
-function ediPtermission(prod) {
+function editPermission(prod) {
     permission.value = { ...prod };
     permissionDialog.value = true;
 }
+
 function initFilters1() {
     filters1.value = {
         global: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -144,10 +145,10 @@ const fetchPermissions = async () => {
                 </template>
             </Toolbar>
 
+            <div class="font-semibold text-xl mb-4">All Permissions</div>
             <DataTable :value="permissions" :paginator="true" :rows="10" dataKey="id" :rowHover="true" v-model:filters="filters1" filterDisplay="menu" :loading="loading1" :filters="filters1" :globalFilterFields="['name', 'roles.name']" showGridlines>
                 <template #header>
                     <div class="flex justify-between">
-                        <div class="font-semibold text-xl">All Permissions</div>
                         <IconField>
                             <InputIcon>
                                 <i class="pi pi-search" />
@@ -181,7 +182,7 @@ const fetchPermissions = async () => {
                     <template #body="{ data }">
                         <!-- <i class="pi" :class="{ 'pi-eye text-green-500 ': data.verified, 'pi-times-circle text-red-500': !data.verified }"></i> -->
                         <div class="flex flex-wrap gap-2">
-                            <Button icon="pi pi-eye" outlined rounded :severity="info" @click="ediPtermission(data)"></Button>
+                            <Button icon="pi pi-eye" outlined rounded severity="info" @click="editPermission(data)"></Button>
                             <Button icon="pi pi-times-circle" outlined rounded severity="danger"></Button>
                         </div>
                     </template>
