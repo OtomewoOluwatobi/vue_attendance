@@ -1,10 +1,7 @@
 <script setup>
 import { FilterMatchMode, FilterOperator } from '@primevue/core/api';
 import { onBeforeMount, ref } from 'vue';
-import { useRoute } from 'vue-router';
 // import axios from 'axios';
-
-const route = useRoute();
 
 const filters1 = ref(null);
 const loading1 = ref(null);
@@ -16,8 +13,6 @@ const roleDialog = ref(false);
 const role = ref({});
 
 const roles = ref([]);
-
-const pageId = route.params.id;
 
 function capitalizeFirstChar(str) {
     return str
