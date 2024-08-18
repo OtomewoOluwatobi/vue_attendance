@@ -1,13 +1,15 @@
 <script setup>
 import { FilterMatchMode, FilterOperator } from '@primevue/core/api';
 import { onBeforeMount, ref } from 'vue';
-// import axios from 'axios';
+import axios from 'axios';
 
 const filters1 = ref(null);
 const loading1 = ref(null);
 
 const permissionsList = ref([]);
 const permissionsValue = ref(null);
+
+const selectedPermissionsValue = ref([]);
 
 const roleDialog = ref(false);
 const role = ref({});
@@ -27,6 +29,9 @@ function showRole(prod) {
 }
 function editRole(prod) {
     role.value = { ...prod };
+    this.selectedPermissionsValue = this.permissionsList.filter((permission) => {
+        return prod.permissions.some((p) => p.name === permission.name && p.id === permission.id);
+    });
 }
 
 onBeforeMount(() => {
@@ -45,92 +50,9 @@ function initFilters1() {
 
 const fetchRolesPermissions = async () => {
     try {
-        // const response = await axios.get('http://127.0.0.1/api/admin/access_control/roles/create');
-        // permissionsList.value = response.data.permissions;
-        // roles.value = response.data.roles;
-        permissionsList.value = [
-            {
-                name: 'create event',
-                id: 1
-            },
-            {
-                name: 'delete event',
-                id: 4
-            },
-            {
-                name: 'update event',
-                id: 2
-            },
-            {
-                name: 'view event',
-                id: 3
-            }
-        ];
-        roles.value = [
-            {
-                id: 1,
-                name: 'manager',
-                guard_name: 'api',
-                created_at: '2024-07-30T16:24:16.000000Z',
-                updated_at: '2024-07-30T16:24:16.000000Z',
-                users_count: 0,
-                permissions: [
-                    {
-                        id: 1,
-                        name: 'create event',
-                        guard_name: 'api',
-                        created_at: '2024-07-30T16:17:23.000000Z',
-                        updated_at: '2024-07-30T16:17:23.000000Z',
-                        pivot: {
-                            role_id: 1,
-                            permission_id: 1
-                        }
-                    },
-                    {
-                        id: 2,
-                        name: 'update event',
-                        guard_name: 'api',
-                        created_at: '2024-07-30T16:17:23.000000Z',
-                        updated_at: '2024-07-30T16:17:23.000000Z',
-                        pivot: {
-                            role_id: 1,
-                            permission_id: 2
-                        }
-                    },
-                    {
-                        id: 3,
-                        name: 'view event',
-                        guard_name: 'api',
-                        created_at: '2024-07-30T16:17:23.000000Z',
-                        updated_at: '2024-07-30T16:17:23.000000Z',
-                        pivot: {
-                            role_id: 1,
-                            permission_id: 3
-                        }
-                    },
-                    {
-                        id: 4,
-                        name: 'delete event',
-                        guard_name: 'api',
-                        created_at: '2024-07-30T16:17:23.000000Z',
-                        updated_at: '2024-07-30T16:17:23.000000Z',
-                        pivot: {
-                            role_id: 1,
-                            permission_id: 4
-                        }
-                    }
-                ]
-            },
-            {
-                id: 2,
-                name: 'Users',
-                guard_name: '',
-                created_at: null,
-                updated_at: null,
-                users_count: 0,
-                permissions: []
-            }
-        ];
+        const response = await axios.get('https://dev.hinvites.com/api/admin/access_control/create');
+        permissionsList.value = response.data.permissions;
+        roles.value = response.data.roles;
     } catch (error) {
         console.error('Error fetching data:', error);
     }
@@ -152,8 +74,8 @@ const fetchRolesPermissions = async () => {
                         <label for="permission_ids">Select Permissions</label>
                         <MultiSelect v-model="permissionsValue" id="permission_ids" :options="permissionsList" optionLabel="name" placeholder="Select Permissions" :filter="true">
                             <template #value="slotProps">
-                                <div class="inline-flex items-center py-1 px-2 bg-primary text-primary-contrast rounded-border mr-2" v-for="option of slotProps.value" :key="option.code">
-                                    <div>{{ capitalizeFirstChar(option.name) }}</div>
+                                <div class="inline-flex items-center py-1 px-2 bg-primary text-primary-contrast rounded-border mr-2" v-for="option of slotProps.value" :key="option.id">
+                                    <div>{{ option.name }}</div>
                                 </div>
                                 <template v-if="!slotProps.value || slotProps.value.length === 0">
                                     <div class="p-1">Select Permissions</div>
@@ -185,7 +107,7 @@ const fetchRolesPermissions = async () => {
 
                 <div class="flex flex-col grow mt-4 basis-0 gap-2">
                     <label for="old_permission_ids">Existing Permissions</label>
-                    <MultiSelect v-model="multiselectValue" :options="multiselectValues" optionLabel="name" placeholder="Select Countries" :filter="true">
+                    <MultiSelect v-model="multiselectValue" :options="selectedPermissionsValue" optionLabel="name" placeholder="Select Countries" :filter="true">
                         <template #value="slotProps">
                             <div class="inline-flex items-center py-1 px-2 bg-primary text-primary-contrast rounded-border mr-2" v-for="option of slotProps.value" :key="option.code">
                                 <div>{{ option.name }}</div>
